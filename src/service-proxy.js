@@ -14,7 +14,11 @@ export default function (params) {
 
   if (!services[serviceName]) {
     // setting up a db connection
-    const connection = mongoose.createConnection(connectionUrl);
+    const connection = ((() => {
+        const conn = mongoose.createConnection();
+        conn.openUri(connectionUrl).catch(e => e);
+        return conn;
+    })());
     // creating a model
     const model = connection.model(this.collectionName, this.schema);
     // creating a service
